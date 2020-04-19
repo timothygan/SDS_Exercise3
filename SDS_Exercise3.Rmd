@@ -5,6 +5,12 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(mosaic)
+library(FNN)
+buildings = read.csv("data/greenuildings.csv")
+wine = read.csv("data/wine.csv")
+social_marketing = read.csv("data/social_marketing.csv")
 ```
 
 ## GitHub Documents
