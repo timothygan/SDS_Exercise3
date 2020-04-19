@@ -1,17 +1,7 @@
----
-title: "SDS_Exercise3"
-output: github_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(mosaic)
 library(FNN)
 greenbuildings = read.csv("data/greenbuildings.csv")
-wine = read.csv("data/wine.csv")
-social_marketing = read.csv("data/social_marketing.csv")
-
 
 rmse = function(y, yhat) {
   sqrt( mean( (y - yhat)^2 ) )
@@ -57,32 +47,7 @@ rmse_vals = do(100)*{
     rmse(buildings_test$Rent, yhat_test5))
 }
 
-
-
-
-
-```
-
-## GitHub Documents
-
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
 rmse_vals
 colMeans(rmse_vals)
 boxplot(rmse_vals)
-```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
