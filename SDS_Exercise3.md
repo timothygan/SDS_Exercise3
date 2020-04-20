@@ -161,21 +161,21 @@ most positively assoiated:
 ## K-means++
 
 The next method we will test is K-means++ clustering. With k=2 and
-nstart=25, we get two clusters, the first consisting of 4836 white wines
-and 24 red wines, and the second consisting of 62 white wines and 1575
-red wines, indicating that k-means++ is very capable of distinguishing
-between red and white wines.
+nstart=25, we get two clusters, the first consisting of 789 white wines
+and 262 red wines, and the second consisting of 4109 white wines and
+1337 red wines, indicating that k-means++ is very capable of
+distinguishing between red and white wines.
 
 ## Quality
 
 We will now determine if k-means++ is also capable of distinguishing the
 quality of wine based on it’s chemical properties by using a larger
 number of clusters. Running k-means++ on the same data but using k=4
-instead we get 4 clusters with a respective average quality of
-6.1685468, 5.6551929, 5.3090909, and 5.8946738 respectively. These all
-are all very close to both each other and the average quality of the
-entire data set, indicating that k-means++ did not significantly
-separate the wines based on quality in this case.
+instead we get 4 clusters with a respective average quality of NA, NA,
+NA, and NaN respectively. These all are all very close to both each
+other and the average quality of the entire data set, indicating that
+k-means++ did not significantly separate the wines based on quality in
+this case.
 
 ## Conclusion
 
@@ -190,3 +190,136 @@ However, k-means++ was not able to distinguish the quality of wines.
 More research would be needed to determine if this is a failure of the
 choice of technique or if these specific chemical properties are not
 indicative of quality.
+
+# Market segmentation
+
+## The data
+
+We have the twitter data of a sample of Twitter accounts that follow the
+NutrientH2O brand account. Namely, the data consists of the frequency of
+tweets by each account in various categories as determined by human
+annotators through Amazon’s Mechanical Turk servidce. Each of these
+categories are listed below:
+
+    ##  [1] "X"                "current_events"   "travel"           "photo_sharing"   
+    ##  [5] "tv_film"          "sports_fandom"    "politics"         "food"            
+    ##  [9] "family"           "home_and_garden"  "music"            "news"            
+    ## [13] "online_gaming"    "shopping"         "health_nutrition" "college_uni"     
+    ## [17] "sports_playing"   "cooking"          "eco"              "computers"       
+    ## [21] "business"         "outdoors"         "crafts"           "automotive"      
+    ## [25] "art"              "religion"         "beauty"           "parenting"       
+    ## [29] "dating"           "school"           "personal_fitness" "fashion"         
+    ## [33] "small_business"
+
+    ##  [1] "X"                "current_events"   "travel"           "photo_sharing"   
+    ##  [5] "tv_film"          "sports_fandom"    "politics"         "food"            
+    ##  [9] "family"           "home_and_garden"  "music"            "news"            
+    ## [13] "online_gaming"    "shopping"         "health_nutrition" "college_uni"     
+    ## [17] "sports_playing"   "cooking"          "eco"              "computers"       
+    ## [21] "business"         "outdoors"         "crafts"           "automotive"      
+    ## [25] "art"              "religion"         "beauty"           "parenting"       
+    ## [29] "dating"           "school"           "personal_fitness" "fashion"         
+    ## [33] "small_business"
+
+Of these, we don’t find “uncategorized”, “chatter”, “spam”, and “adult”
+to be particularly useful in determining the interests of NutrientH20
+fans, so we will remove them. Furthermore, we will remove any account
+with a number of spam posts greater than 10 as they are likely to be
+bots.
+
+## K-means clustering
+
+We will run k-means clustering on the refined data to see if any
+interesting groups appear. First let’s look at k-means centers with k=2:
+
+    ##   current_events   travel photo_sharing  tv_film sports_fandom politics
+    ## 1       1.592271 1.537066      3.064669 1.099369      1.542587 1.684543
+    ## 2       1.513607 1.594194      2.626247 1.064711      1.603871 1.808588
+    ##       food    family home_and_garden     music     news online_gaming shopping
+    ## 1 2.201104 0.9731861       0.6285489 0.8059937 1.315457      1.220032 1.504732
+    ## 2 1.243423 0.8429090       0.5000000 0.6549743 1.184457      1.206683 1.367251
+    ##   health_nutrition college_uni sports_playing  cooking       eco computers
+    ## 1       11.2358044    1.406151      0.7421136 4.228707 0.8485804 0.6971609
+    ## 2        0.9053523    1.576958      0.6194436 1.570608 0.4478379 0.6398549
+    ##    business  outdoors    crafts automotive       art religion    beauty
+    ## 1 0.4913249 2.2776025 0.6608833  0.7744479 0.8604101 1.144322 0.8651420
+    ## 2 0.4101905 0.4960689 0.4880556  0.8404899 0.6988207 1.086030 0.6744784
+    ##   parenting    dating    school personal_fitness   fashion
+    ## 1 1.0299685 1.0646688 0.8154574        5.6206625 1.3178233
+    ## 2 0.9005141 0.6430299 0.7585425        0.6648019 0.9349864
+
+Here we see two main groups. As expected, we have those with a strong
+interest in personal fitness and nutrition, and a second group that
+represents pretty much everyone else with no clear dominant interests.
+
+Here we add a 3rd cluster:
+
+    ##   current_events   travel photo_sharing  tv_film sports_fandom politics
+    ## 1       1.498687 1.587656      2.372127 1.072882      1.610473 1.844058
+    ## 2       1.557545 1.491901      2.630009 1.072464      1.523444 1.574595
+    ## 3       1.739060 1.735818      6.029173 1.040519      1.565640 1.648298
+    ##       food    family home_and_garden     music     news online_gaming shopping
+    ## 1 1.249015 0.8368352       0.4893303 0.6152331 1.208142      1.193368 1.328956
+    ## 2 2.216539 0.9369139       0.6274510 0.7450980 1.248934      1.199488 1.427962
+    ## 3 1.306321 0.9918963       0.6272285 1.1863857 1.097245      1.379254 1.912480
+    ##   health_nutrition college_uni sports_playing    cooking       eco computers
+    ## 1        0.8890348    1.561720      0.6002955  0.8378201 0.4415627 0.6296783
+    ## 2       11.6078431    1.364876      0.7024723  3.1943734 0.8491049 0.6462063
+    ## 3        1.9497569    1.779579      0.9027553 11.1815235 0.5705024 0.8460292
+    ##    business  outdoors    crafts automotive       art religion    beauty
+    ## 1 0.3987196 0.4863756 0.4780039  0.8376559 0.6866382 1.074524 0.4391005
+    ## 2 0.4595055 2.3111679 0.6427962  0.7374254 0.8209719 1.115090 0.5319693
+    ## 3 0.5964344 0.8022690 0.6482982  0.9286872 0.9189627 1.264182 3.6612642
+    ##   parenting    dating    school personal_fitness   fashion
+    ## 1 0.8891989 0.6477347 0.7388378         0.648063 0.5845371
+    ## 2 1.0017050 1.0511509 0.7681159         5.779199 0.8201194
+    ## 3 1.0858995 0.6871961 1.0518639         1.291734 5.4003241
+
+Now a third group emerges. These people are strongly interested in photo
+sharing, beauty, cooking, and fashion. They seem to fall in to a common
+“influencer” category that are more concerned with the image of health
+and nutrition that NutrientH2O provides rather than the nutritional
+benefits themselves.
+
+Finally, we add a 4th cluster:
+
+    ##   current_events   travel photo_sharing  tv_film sports_fandom politics
+    ## 1       1.759664 1.731092      6.068908 1.042017      1.561345 1.665546
+    ## 2       1.497465 1.583668      2.357580 1.050533      1.606400 1.861689
+    ## 3       1.571936 1.497336      2.616341 1.048845      1.532860 1.579929
+    ## 4       1.468326 1.628959      2.751131 1.418552      1.633484 1.540724
+    ##       food    family home_and_garden     music     news online_gaming shopping
+    ## 1 1.307563 0.9899160       0.6151261 1.1932773 1.110924     1.0336134 1.929412
+    ## 2 1.236055 0.8178003       0.4874978 0.6058752 1.215073     0.5983564 1.332226
+    ## 3 2.235346 0.9245115       0.6243339 0.7362345 1.269094     0.9200710 1.420959
+    ## 4 1.472851 1.1357466       0.5588235 0.7918552 1.047511    10.0791855 1.321267
+    ##   health_nutrition college_uni sports_playing    cooking       eco computers
+    ## 1        1.9882353    1.443697      0.8336134 11.2907563 0.5697479 0.8521008
+    ## 2        0.9022556    0.963630      0.4775310  0.8307396 0.4409862 0.6277321
+    ## 3       11.7238011    1.050622      0.6518650  3.2007105 0.8534636 0.6492007
+    ## 4        1.5633484   10.542986      2.4366516  1.5316742 0.4886878 0.6515837
+    ##    business  outdoors    crafts automotive       art religion    beauty
+    ## 1 0.6000000 0.7983193 0.6537815  0.9310924 0.9092437 1.290756 3.6705882
+    ## 2 0.3979717 0.4859241 0.4691380  0.8274174 0.6525616 1.076937 0.4439587
+    ## 3 0.4618117 2.3410302 0.6412078  0.7309059 0.7984014 1.106572 0.5328597
+    ## 4 0.4140271 0.6312217 0.6153846  0.9773756 1.2239819 1.042986 0.5316742
+    ##   parenting    dating    school personal_fitness   fashion
+    ## 1 1.0941176 0.6873950 1.0537815        1.2890756 5.4285714
+    ## 2 0.8828467 0.6417206 0.7448855        0.6481902 0.5756251
+    ## 3 1.0035524 1.0612789 0.7673179        5.8605684 0.8179396
+    ## 4 0.9773756 0.7443439 0.6787330        1.0203620 0.9321267
+
+With k=4, a 4th group emerges with common interests in
+college/university, online gaming, and tv/film. This shows that
+NutrientH2O also appeals to younger people with a more sedentary
+lifestyle. Perhaps they simply like it for the taste or the energy it
+provides for studying and gaming.
+
+## Conclusion
+
+Three dominant groups of followers of NutrientH2O appear:
+nutrition/fitness enthusiasts, social media “influencer” types, and
+college gamers. It is thus important to market not only the scientific
+nutritional benefits of NutrientH2O, but also the lifestyle image it
+provides. For the third group, it might be beneficial to stress the
+taste and energy-providing aspects of NutrientH2O

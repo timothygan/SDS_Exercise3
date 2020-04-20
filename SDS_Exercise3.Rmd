@@ -107,6 +107,24 @@ scores = pc2$x
 
 qplot(scores[,1], scores[,2], color=wine$color, xlab='Component 1', ylab='Component 2')
 
+######### Social Segmentation #########\
+
+attributes(social_marketing)$name
+
+cols.dont.want <- c("spam", "uncategorized", "adult", "chatter")
+
+social_marketing <- social_marketing[, ! names(social_marketing) %in% cols.dont.want, drop = F]
+summary(social_marketing)
+
+X_social = social_marketing[, (2:32)]
+summary(X_social)
+clust1 = kmeanspp(X_social, 2, nstart=25)
+clust2 = kmeanspp(X_social, 3, nstart=25)
+clust3 = kmeanspp(X_social, 4, nstart=25)
+
+clust1$centers
+clust2$centers
+clust3$centers
 
 ```
 
@@ -200,6 +218,45 @@ We will now determine if k-means++ is also capable of distinguishing the quality
 
 While both methods seem to be able to distinguish wine color, we believe that k-means++ makes more sense than PCA for this data set because the size of the data set is much larger than the number of attributes used. However principal component analysis did reveal some potentially useful information. Namely that qualities like high volatile acidity and chloride composition are associated with red wines and qualities like residual sugar and sulfur dioxide are associated with white wines. However, k-means++ was not able to distinguish the quality of wines. More research would be needed to determine if this is a failure of the choice of technique or if these specific chemical properties are not indicative of quality. 
 
+# Market segmentation
+
+## The data
+
+We have the twitter data of a sample of Twitter accounts that follow the NutrientH2O brand account. Namely, the data consists of the frequency of tweets by each account in various categories as determined by human annotators through Amazon's Mechanical Turk servidce. Each of these categories are listed below:
+
+```{r market,  echo=FALSE}
+
+attributes(social_marketing)$names
+```
+
+Of these, we don't find "uncategorized", "chatter", "spam", and "adult" to be particularly useful in determining the interests of NutrientH20 fans, so we will remove them. Furthermore, we will remove any account with a number of spam posts greater than 10 as they are likely to be bots.
+
+## K-means clustering
+We will run k-means clustering on the refined data to see if any interesting groups appear. First let's look at k-means centers with k=2:
+
+```{r market_1,  echo=FALSE}
+clust1$centers
+```
+Here we see two main groups. As expected, we have those with a strong interest in personal fitness and nutrition, and a second group that represents pretty much everyone else with no clear dominant interests.
+
+Here we add a 3rd cluster:
+
+```{r market_2,  echo=FALSE}
+clust2$centers
+```
+
+Now a third group emerges. These people are strongly interested in photo sharing, beauty, cooking, and fashion. They seem to fall in to a common "influencer" category that are more concerned with the image of health and nutrition that NutrientH2O provides rather than the nutritional benefits themselves.
+
+Finally, we add a 4th cluster:
+
+```{r market_3,  echo=FALSE}
+clust3$centers
+```
+
+With k=4, a 4th group emerges with common interests in college/university, online gaming, and tv/film. This shows that NutrientH2O also appeals to younger people with a more sedentary lifestyle. Perhaps they simply like it for the taste or the energy it provides for studying and gaming.
+
+## Conclusion
+Three dominant groups of followers of NutrientH2O appear: nutrition/fitness enthusiasts, social media "influencer" types, and college gamers. It is thus important to market not only the scientific nutritional benefits of NutrientH2O, but also the lifestyle image it provides. For the third group, it might be beneficial to stress the taste and energy-providing aspects of NutrientH2O
 
 
 
