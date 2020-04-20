@@ -83,14 +83,48 @@ rent will be around a dollar, either more expensive if the building was
 previously not green or less expensive if the building was previously
 green.
 
-## Including Plots
+# What Causes What
 
-You can also embed plots, for example:
+### Question 1
 
-![](SDS_Exercise3_files/figure-gfm/pressure-1.png)<!-- -->
+The podcast talks about how the data is quite messy because high crime
+cities have an incentive to hire a lot of police. This creates a direct
+relation between police and crime, and causes the number of police
+present depend on the crime and skews how the relation looks the other
+way around.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.
+### Question 2
+
+The researchers were able to use Washington D.C.’s terrorism alert
+system to create a situation where more police happened to be present
+for reasons unrelated to crime. This let them ask on these alert days
+what happens to crime when there are more police present on the street
+and in various areas. The table shows how on high alert days, crime rate
+is decreased by 5%. They were able to verify that the crime rate did not
+decrease because people were scared of a terrorist threat by tracking
+the number of people who took the metro. The number of people taking
+metro barely changed, indicating that the number of people that stayed
+inside due to a terrorist threat on these alert days did not change
+significantly.
+
+### Question 3
+
+They were trying to see whether or not people were staying inside
+because there was a terrorist threat. People staying at home rather than
+robbing stores would explain the decrease in crime rather than the extra
+number of police. However, they saw that the number of riders in the
+metro (essentially the number of possible victims) did not change
+significantly between high alert days and normal days. This meant that
+the decrease in crime rate in D.C. was most likely caused by the higher
+number of police that were present during these high alert days.
+
+### Question 4
+
+The model is estimating the reduction in crime on high alert days in
+various districts. It can be seen that the district in D.C. has
+significant decrease in crime rate in comparison to other districts that
+did not have an increase in police during high alert days. This implies
+the number of police present decreases the crime rate.
 
 # Clustering and PCA
 
@@ -152,7 +186,7 @@ However principal component analysis did reveal some potentially useful
 information. Namely that qualities like high volatile acidity and
 chloride composition are associated with red wines and qualities like
 residual sugar and sulfur dioxide are associated with white wines.
-However, k-means++ was not able to distinguis the quality of wines. More
-researcu would be needed to determine if this is a failure of the choice
-of technique or if these specific chemical properties are not indicative
-of quality.
+However, k-means++ was not able to distinguish the quality of wines.
+More research would be needed to determine if this is a failure of the
+choice of technique or if these specific chemical properties are not
+indicative of quality.
