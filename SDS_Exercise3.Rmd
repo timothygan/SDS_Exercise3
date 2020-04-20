@@ -4,10 +4,16 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
+########### Predictive model building ############
+
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(mosaic)
 library(FNN)
+library(ggplot2)
+library(LICORS)  # for kmeans++
+library(foreach)
+
 greenbuildings = read.csv("data/greenbuildings.csv")
 wine = read.csv("data/wine.csv")
 social_marketing = read.csv("data/social_marketing.csv")
@@ -16,7 +22,7 @@ rmse = function(y, yhat) {
   sqrt( mean( (y - yhat)^2 ) )
 }
 n = nrow(greenbuildings)
-n_train = round(0.8*n) # round to nearest integer n_test = n ­ n_train
+n_train = round(0.8*n) # round to nearest integer n_test = n ? n_train
 gb_no_green = subset(greenbuildings, green_rating == 0)
 gb_no_green$green_rating[gb_no_green$green_rating == 0] <- 1
 gb_green = subset(greenbuildings, green_rating == 1)
@@ -62,9 +68,44 @@ rmse_vals = do(100)*{
 }
 
 
+####### Clustering and PCA #########
+
+# Center and scale the data
+summary(wine)
+X_wine = wine[, (0:10)]
+X_wine = scale(X_wine, center=TRUE, scale=TRUE)
+
+mu = attr(X_wine,"scaled:center")
+sigma = attr(X_wine,"scaled:scale")
+
+clust1 = kmeanspp(X_wine, 2, nstart=25)
+clust2 = kmeanspp(X_wine, 6, nstart=25)
+
+#clust1$center  # not super helpful
+#clust1$center[1,]*sigma + mu
+#clust1$center[2,]*sigma + mu
 
 
+# Which cars are in which clusters?
+# which(clust1$cluster == 1)
+# which(clust1$cluster == 2)
 
+
+length(which(wine$color[which(clust1$cluster == 1)] == "white"))
+length(which(wine$color[which(clust1$cluster == 1)] == "red"))
+length(which(wine$color[which(clust1$cluster == 2)] == "white"))
+length(which(wine$color[which(clust1$cluster == 2)] == "red"))
+
+mean(wine$quality[which(clust2$cluster == 1)])
+mean(wine$quality[which(clust2$cluster == 2)])
+mean(wine$quality[which(clust2$cluster == 3)])
+mean(wine$quality[which(clust2$cluster == 4)])
+
+pc2 = prcomp(X_wine, scale=TRUE, rank=2)
+loadings = pc2$rotation
+scores = pc2$x
+
+qplot(scores[,1], scores[,2], color=wine$color, xlab='Component 1', ylab='Component 2')
 
 
 ```
@@ -114,3 +155,42 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Clustering and PCA
+
+
+## The data
+We are given data on the chemical properties of 6500 different bottles of vinho verde wine from northern Portugal. We are also given the color of each bottle of wine, and it's quality as determined by a panel of wine tasters. The goal is to determine if various methods of dimensionality reduction are capable of separating the bottles of wine by color and quality using only their chemical properties
+
+## PCA
+
+The first method we will test is Principle Component Analysis. Here is a biplot of the first 2 PC's of a second order PCA of the data:
+
+```{r PCA,  echo=FALSE}
+
+qplot(scores[,1], scores[,2], color=wine$color, xlab='Component 1', ylab='Component 2')  + scale_color_manual(values=c("red", "yellow"))
+
+```
+
+The first PC axis seems to primarily assign red wines negative values and white wines positive values. Examining PC1 further, these are the 11 chemical properties sorted from most negatively associated with PC1 to most positively assoiated:
+
+```{r PCA_2,  echo=FALSE}
+
+loadings[,1] %>% sort %>% head(20)
+
+```
+
+## K-means++
+
+The next method we will test is K-means++ clustering. With k=2 and nstart=25, we get two clusters, the first consisting of `r length(which(wine$color[which(clust1$cluster == 1)] == "white"))` white wines and `r length(which(wine$color[which(clust1$cluster == 1)] == "red")) ` red wines, and the second consisting of `r length(which(wine$color[which(clust1$cluster == 2)] == "white"))` white wines and `r length(which(wine$color[which(clust1$cluster == 2)] == "red"))` red wines, indicating that k-means++ is very capable of distinguishing between red and white wines.
+
+## Quality 
+
+We will now determine if k-means++ is also capable of distinguishing the quality of wine based on it's chemical properties by using a larger number of clusters. Running k-means++ on the same data but using k=4 instead we get 4 clusters with a respective average quality of `r mean(wine$quality[which(clust2$cluster == 1)]) `, `r mean(wine$quality[which(clust2$cluster == 2)]) `,
+`r mean(wine$quality[which(clust2$cluster == 3)])`, and
+`r mean(wine$quality[which(clust2$cluster == 4)])` respectively. These all are all very close to both each other and the average quality of the entire data set, indicating that k-means++ did not significantly separate the wines based on quality in this case.
+
+## Conclusion
+
+While both methods seem to be able to distinguish wine color, we believe that k-means++ makes more sense than PCA for this data set because the size of the data set is much larger than the number of attributes used. However principal component analysis did reveal some potentially useful information. Namely that qualities like high volatile acidity and chloride composition are associated with red wines and qualities like residual sugar and sulfur dioxide are associated with white wines. However, k-means++ was not able to distinguish the quality of wines. More research would be needed to determine if this is a failure of the choice of technique or if these specific chemical properties are not indicative of quality. 
+

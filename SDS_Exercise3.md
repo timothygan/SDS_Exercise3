@@ -91,3 +91,68 @@ You can also embed plots, for example:
 
 Note that the `echo = FALSE` parameter was added to the code chunk to
 prevent printing of the R code that generated the plot.
+
+# Clustering and PCA
+
+## The data
+
+We are given data on the chemical properties of 6500 different bottles
+of vinho verde wine from northern Portugal. We are also given the color
+of each bottle of wine, and it’s quality as determined by a panel of
+wine tasters. The goal is to determine if various methods of
+dimensionality reduction are capable of separating the bottles of wine
+by color and quality using only their chemical properties
+
+## PCA
+
+The first method we will test is Principle Component Analysis. Here is a
+biplot of the first 2 PC’s of a second order PCA of the data:
+
+![](SDS_Exercise3_files/figure-gfm/PCA-1.png)<!-- -->
+
+The first PC axis seems to primarily assign red wines negative values
+and white wines positive values. Examining PC1 further, these are the 11
+chemical properties sorted from most negatively associated with PC1 to
+most positively assoiated:
+
+    ##     volatile.acidity            chlorides            sulphates 
+    ##           -0.3934947           -0.3219381           -0.3098422 
+    ##        fixed.acidity                   pH              density 
+    ##           -0.2666771           -0.2060287           -0.1076854 
+    ##          citric.acid       residual.sugar  free.sulfur.dioxide 
+    ##            0.1405374            0.3112802            0.4216289 
+    ## total.sulfur.dioxide 
+    ##            0.4753293
+
+## K-means++
+
+The next method we will test is K-means++ clustering. With k=2 and
+nstart=25, we get two clusters, the first consisting of 4836 white wines
+and 24 red wines, and the second consisting of 62 white wines and 1575
+red wines, indicating that k-means++ is very capable of distinguishing
+between red and white wines.
+
+## Quality
+
+We will now determine if k-means++ is also capable of distinguishing the
+quality of wine based on it’s chemical properties by using a larger
+number of clusters. Running k-means++ on the same data but using k=4
+instead we get 4 clusters with a respective average quality of
+6.1685468, 5.6551929, 5.3090909, and 5.8946738 respectively. These all
+are all very close to both each other and the average quality of the
+entire data set, indicating that k-means++ did not significantly
+separate the wines based on quality in this case.
+
+## Conclusion
+
+While both methods seem to be able to distinguish wine color, we believe
+that k-means++ makes more sense than PCA for this data set because the
+size of the data set is much larger than the number of attributes used.
+However principal component analysis did reveal some potentially useful
+information. Namely that qualities like high volatile acidity and
+chloride composition are associated with red wines and qualities like
+residual sugar and sulfur dioxide are associated with white wines.
+However, k-means++ was not able to distinguis the quality of wines. More
+researcu would be needed to determine if this is a failure of the choice
+of technique or if these specific chemical properties are not indicative
+of quality.
